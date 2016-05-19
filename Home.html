@@ -1,0 +1,151 @@
+{% extends "layout.html" %}
+{% block content %}
+  <link rel="stylesheet" href="style.css">
+
+  <div class="jumbo">
+   <div id="Social Media">
+  
+    <h2>Welcome to the Social appp<h2>
+    <h3>Live feed<h3>
+
+    <div class="col-sm-10">
+      <div class="row">
+            
+          
+        <div id="twitter"></div>
+        <div class="col-md-4" style="background-color: #FF9999">
+            <dt>Hashtag:
+            <dd><input id="twitter" value="" type=text size=20 name=tag placeholder="Twitter Hashtag">
+            <dd><input id="twitter_submit" type=submit>            
+            <div class="row">
+                <div id="twitter_result" class="col-md-12">
+                    
+                </div>
+            </div>
+        </div>
+        
+        <div id="Facebook-1">
+        <div class="col-md-4" style="background-color:#99CCFF ">
+            <dt>Facebook page:
+            <dd><input id="facebook" value="" type=text size=20 name=link placeholder="Facebook page link">
+            <dd><input id="facebook_submit" type=submit>
+            <div class="row">
+                <div id="facebook_result" class="col-md-12">
+                    
+                </div>
+            </div>
+        </div>
+        
+        <div id="Facebook-2">
+        <div class="col-md-4" style="background-color: #90EE90">
+           <dt>Facebook page2:
+                
+           <dd><input id="facebook2" value="" type=text size=15 name=link placeholder="Facebook link 2">
+            <dd><input id="facebook_submit2" type=submit>
+            <div class="row">
+                <div id="facebook_result2" class="col-md-8">
+                </div>
+                    
+                
+            </div>
+        </div>
+        </div>
+        <div class="container">
+        <div class="col-md-4">
+        <div class="row">
+          <div class="row outer">
+          
+          </div>
+          </div>
+          </div>
+          </div>
+        </div>
+        </div>
+       
+
+        <script type=text/javascript>
+            function makePost(image,username,link,text){
+              post = [];    //stack needed to make it display the results in a single column
+              post.push('<div class="media">');
+              post.push('<div class="hide media-left">');
+              post.push('<a href="'+link+'"><img class="media-object" src="'+image+'" alt="..."></a>'); //need this for image
+              post.push('</a></div>');
+              post.push('<div class="media-body"><h4 class="media-heading">@'+username+'</h4>');
+              post.push('<p>'+text+'</p></div>');
+              return post.join('');
+            }
+          $(function() {
+            setInterval(function(){ 
+                if( $('input#twitter').val() != '')
+                    $('#twitter_submit').click();
+                if( $('input#facebook').val() != '')
+                    $('#facebook_submit').click();
+                if( $('input#facebook2').val() != '')
+                    $('#facebook_submit2').click();
+            }, 10000);//every 10 seconds get new tweets and facebook posts :P
+
+            $('#facebook_submit').bind('click', function() {
+              $.getJSON($SCRIPT_ROOT + '/facebook', {
+                link: $('input#facebook').val()
+              }, function(data) {
+               $("#facebook_result").html('');
+              // console.log(data,data.result)
+               $.each(JSON.parse(data.result).data, function( index, value ) {
+                  // console.log(index,value)
+                  if(!!value.message)
+                   message = value.message
+                  else if(!!value.story)
+                   message = value.story
+                  $("#facebook_result").append( makePost('http://graph.facebook.com/v2.6/'+$('input#facebook').val()+'/picture',$('input#facebook').val(),'facebook.com/'+$('input#facebook').val(),message) );
+                  });
+              });
+              return false;
+            });
+            
+            $('#facebook_submit2').bind('click', function() {
+              $.getJSON($SCRIPT_ROOT + '/facebook', {
+                link: $('input#facebook2').val() //?
+              }, function(data) {
+               $("#facebook_result2").html('');
+              // console.log(data,data.result)
+               $.each(JSON.parse(data.result).data, function( index, value ) {
+                  // console.log(index,value)
+                  if(!!value.message)
+                   message = value.message
+                  else if(!!value.story)
+                   message = value.story
+                  $("#facebook_result2").append( makePost('http://graph.facebook.com/v2.6/'+$('input#facebook2').val()+'/picture',$('input#facebook2').val(),'facebook.com/'+$('input#facebook2').val(),message) );
+                  });
+              });
+              return false;
+            });
+
+                        
+            $('#twitter_submit').bind('click', function() {
+              var tags = $('input#twitter').val();
+              if(!!tags)
+                {
+                  if(tags.split('.').length > 1)
+                    tags = tags.split(' ').join(' AND #');//OR
+                    tags = '#'+tags;
+                    console.log(tags)
+                }
+              $.getJSON($SCRIPT_ROOT + '/twitter', {
+                hashtag: tags
+              }, function(data) {
+                $("#twitter_result").html('');
+                // console.log(data)
+                  $.each(data.result, function( index, value ) {
+                    //   console.log(index,value.user)
+                      $("#twitter_result").append( makePost(value.user.profile_image_url,value.user.screen_name,value.user.url,value.text) );
+                  });
+                
+              });
+              return false;
+            });
+            
+          });
+        </script>
+  </div>
+  
+{% endblock %}
