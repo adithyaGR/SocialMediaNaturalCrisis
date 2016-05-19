@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Social App</title>    
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type=text/javascript>
+      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
+  <!--</head>-->
+  
+    
+   
+    <!--<header>
+      <div class="container">
+        <h1 class="logo">Social App</h1>
+      </div>
+    
+    </header> -->
+   
+   
+   
+    <div class="container" align="centre">
+     <div align="centre">
+      {% block content %}
+      {% endblock %}
+      
+
+    </div>
+    </div>
+    
+    
+    <div class="container">
+      
+     <div class="col-md-4" style="background-color: #FF9999"> 
+     
+      
+    </div>
+
+     
+
+  </body>
+</html>
